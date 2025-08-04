@@ -28,6 +28,7 @@ services:
       - PAGE_SIZE=20
       - COVER_SIZE=300
       - COVER_QUALITY=70
+      - PDF_RENDERING_DPI=600
     restart: unless-stopped
 
 networks:

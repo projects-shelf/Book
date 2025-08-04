@@ -1,23 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ViewerLayout } from './layout';
 import { ViewerOptions } from './sheet';
-import { useWindowSize } from '@/hooks/windowSize';
 import { Slider } from "@/components/ui/slider"
 import { sendProgress } from '@/api/progress';
 import { sendAccess } from '@/api/access';
-
-pdfjs.GlobalWorkerOptions.workerPort =
-    new Worker("/pdf.worker.min.js");
+import { useWindowSize } from '@/hooks/windowSize';
 
 interface PDFViewerProps {
     fileUrl: string;
     initialPage?: number;
 }
 
-const scaling_factor = 3
 const big_number = 99999
 
 export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
@@ -31,13 +24,7 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
     const [scale, setScale] = useState(0.5);
     const [sliderValue, setSliderValue] = useState([initialPage]);
 
-    const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-        setNumPages(numPages);
-        if (initialPage < 1 || initialPage > numPages) {
-            setPageNumber(1);
-            setSliderValue([1]);
-        }
-    };
+    const imgRef = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
         const saved = localStorage.getItem("viewerOptions")
@@ -51,6 +38,8 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
                 console.warn("Failed to parse viewerOptions from localStorage")
             }
         }
+
+
     }, [])
 
     const toPrev = () => {
@@ -101,9 +90,6 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
         }
     }
 
-    const { width: windowWidth, height: windowHeight } = useWindowSize()
-    const windowAspect = windowWidth / windowHeight
-
     const standerisedPageNumber = useMemo(() => {
         switch (spread) {
             case "odd":
@@ -127,6 +113,9 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
         }
     }, [standerisedPageNumber, spread, numPages]);
 
+    const { width: windowWidth, height: windowHeight } = useWindowSize()
+    const windowAspect = windowWidth / windowHeight
+
     const encodedFilePath = useMemo(() => {
         try {
             const url = new URL(fileUrl, window.location.origin);
@@ -138,6 +127,28 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
     }, [fileUrl]);
 
     sendAccess(encodedFilePath ?? "")
+
+    useEffect(() => {
+        const fetchPageCount = async () => {
+            try {
+                const res = await fetch(`/book/pdf/pages?path=${encodedFilePath}`);
+                if (!res.ok) throw new Error("Failed to fetch page count");
+                const data = await res.json();
+                const total = data.pages ?? 1;
+
+                setNumPages(total);
+
+                if (initialPage < 1 || initialPage > total) {
+                    setPageNumber(1);
+                    setSliderValue([1]);
+                }
+            } catch (err) {
+                console.error("Error fetching PDF page count:", err);
+            }
+        };
+
+        fetchPageCount();
+    }, []);
 
     return (
         <ViewerLayout
@@ -161,43 +172,49 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
                 }
             }}>
             <div className="relative w-full max-w-full h-screen overflow-hidden">
-                <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
-                    <div style={{
-                        display: "flex", justifyContent: 'center', transform: `scale(${scale})`, transformOrigin: 'top center'
-                    }}>
-                        {direction === 'rtl' && isSpreads && (
-                            <Page pageNumber={Math.min(standerisedPageNumber + 1, numPages ?? 1)} scale={scaling_factor} />
-                        )}
-                        <Page
-                            pageNumber={standerisedPageNumber}
-                            scale={scaling_factor}
-                            onLoadSuccess={(page) => {
-                                const { width: pageWidth, height: pageHeight } = page.getViewport({ scale: scaling_factor });
-                                const pagesWidth = (isSpreads ? pageWidth * 2 : pageWidth)
-                                const pageAspect = pagesWidth / pageHeight
-                                if (pageAspect > windowAspect) {
-                                    setScale(windowWidth / pagesWidth)
-                                } else {
-                                    setScale(windowHeight / pageHeight)
-                                }
-                            }}
-                        />
-                        {direction === 'ltr' && isSpreads && (
-                            <Page pageNumber={Math.min(standerisedPageNumber + 1, numPages ?? 1)} scale={scaling_factor} />
-                        )}
+                <div style={{ display: "flex", justifyContent: 'center', transform: `scale(${scale})`, transformOrigin: 'top center' }}>
+                    {direction === 'rtl' && isSpreads && (
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            key={`l-/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 1, numPages ?? 1)}`}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 1, numPages ?? 1)}`} />
+                    )}
+                    <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                        key={`m-/book/pdf?path=${encodedFilePath}&page=${standerisedPageNumber}`}
+                        src={`/book/pdf?path=${encodedFilePath}&page=${standerisedPageNumber}`}
+                        ref={imgRef} onLoad={() => {
+                            const pageWidth = imgRef.current!.naturalWidth;
+                            const pageHeight = imgRef.current!.naturalHeight;
+                            const pagesWidth = isSpreads ? pageWidth * 2 : pageWidth;
+                            const pageAspect = pagesWidth / pageHeight;
 
-                        {/* Shadow Page */}
-                        <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-                            <Page pageNumber={Math.max(standerisedPageNumber - 1, 1)} scale={scaling_factor} />
-                            <Page pageNumber={Math.max(standerisedPageNumber - 2, 1)} scale={scaling_factor} />
-                            <Page pageNumber={Math.min(standerisedPageNumber + 1, numPages ?? 1)} scale={scaling_factor} />
-                            <Page pageNumber={Math.min(standerisedPageNumber + 2, numPages ?? 1)} scale={scaling_factor} />
-                            <Page pageNumber={Math.min(standerisedPageNumber + 3, numPages ?? 1)} scale={scaling_factor} />
-                        </div>
-                        {/* Shadow Page */}
+                            if (pageAspect > windowAspect) {
+                                setScale(windowWidth / pagesWidth);
+                            } else {
+                                setScale(windowHeight / pageHeight);
+                            }
+                        }} />
+                    {direction === 'ltr' && isSpreads && (
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            key={`r-/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 1, numPages ?? 1)}`}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 1, numPages ?? 1)}`} />
+                    )}
 
+                    {/* Shadow Page */}
+                    <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.max(standerisedPageNumber - 1, 1)}`} />
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.max(standerisedPageNumber - 2, 1)}`} />
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 1, numPages ?? 1)}`} />
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 2, numPages ?? 1)}`} />
+                        <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                            src={`/book/pdf?path=${encodedFilePath}&page=${Math.min(standerisedPageNumber + 3, numPages ?? 1)}`} />
                     </div>
-                </Document>
+                    {/* Shadow Page */}
+
+                </div>
             </div>
 
             <div className="absolute left-0 bottom-3 w-full" style={{ opacity: 0.25 }}>

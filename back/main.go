@@ -48,9 +48,10 @@ func main() {
 	r.GET("/api/progress", api.ProgressHandler(bookDB))
 	r.GET("/api/access", api.AccessHandler(bookDB))
 
-	r.GET("/book/pdf", stream.PDFStreamHandler())
 	r.GET("/book/epub", stream.EPUBStreamHandler())
 
+	r.GET("/book/pdf", stream.PDFStreamHandler())
+	r.GET("/book/pdf/pages", stream.PDFPagesHandler())
 	r.GET("/book/cbr", stream.CBRStreamHandler())
 	r.GET("/book/cbr/pages", stream.CBRPagesHandler())
 	r.GET("/book/cbz", stream.CBZStreamHandler())
