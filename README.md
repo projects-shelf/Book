@@ -64,7 +64,7 @@ CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET 
 ec92381e644d   shelf_book_nginx   0.00%     2.031MiB / 5.128GiB   0.04%     244MB / 249MB   0B / 0B     2
 ```
 
-Resource consumption during idle periods (on Intel Mac)
+Resource consumption during idle periods (on Arm Mac)
 
 ## License
 
