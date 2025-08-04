@@ -1,0 +1,33 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: shelf_book_nginx
+    networks:
+      - shelf-book-network
+    ports:
+      - "50080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./front/dist:/front
+    depends_on:
+      - go
+    restart: unless-stopped
+
+  go:
+    build:
+      context: ./back
+    container_name: shelf_book_go
+    networks:
+      - shelf-book-network
+    volumes:
+      - ./db:/db
+      - ./cache:/cache
+      - ./books:/books:ro
+    environment:
+      - TZ=UTC
+      - PAGE_SIZE=20
+    restart: unless-stopped
+
+networks:
+  shelf-book-network:
+    driver: bridge
