@@ -73,7 +73,7 @@ func extractPDFCover(pdfPath, outputWebPPath string) error {
 	defer outFile.Close()
 
 	var buf bytes.Buffer
-	if err := webp.Encode(&buf, resized, &webp.Options{Lossless: false, Quality: quality}); err != nil {
+	if err := webp.Encode(&buf, resized, &webp.Options{Lossless: false, Quality: float32(quality)}); err != nil {
 		return fmt.Errorf("failed to encode WebP: %w", err)
 	}
 	if _, err := buf.WriteTo(outFile); err != nil {

@@ -8,12 +8,12 @@ import (
 
 var (
 	size    int
-	quality float32
+	quality int
 )
 
 func init() {
 	size = getEnvInt("COVER_SIZE", 200)
-	quality = float32(getEnvInt("COVER_QUALITY", 70))
+	quality = getEnvInt("COVER_QUALITY", 70)
 }
 
 func getEnvInt(key string, def int) int {
