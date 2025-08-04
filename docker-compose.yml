@@ -26,6 +26,8 @@ services:
     environment:
       - TZ=UTC
       - PAGE_SIZE=20
+      - COVER_SIZE=300
+      - COVER_QUALITY=70
     restart: unless-stopped
 
 networks:
