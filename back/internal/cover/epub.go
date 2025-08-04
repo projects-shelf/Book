@@ -57,7 +57,7 @@ func extractEPUBCover(epubPath, outputWebPPath string) error {
 	}
 
 	sort.Strings(files)
-	targetFile := files[0] // 最初の画像を表紙と仮定
+	targetFile := files[0]
 
 	// 3. Extract image via 7z
 	cmdExtract := exec.Command("7z", "x", "-so", epubPath, targetFile)
@@ -77,7 +77,7 @@ func extractEPUBCover(epubPath, outputWebPPath string) error {
 	}
 
 	// 4. Decode image
-	img, _, err := image.Decode(bytes.NewReader(imgData))
+	img, err := decodeImageWithWebP(imgData)
 	if err != nil {
 		return fmt.Errorf("failed to decode image: %w", err)
 	}
