@@ -35,6 +35,8 @@ func main() {
 
 	// api
 
+	println("📚 Book scanning completed. Starting the server now...")
+
 	pageSize := 20
 	if v := os.Getenv("PAGE_SIZE"); v != "" {
 		if ps, err := strconv.Atoi(v); err == nil && ps > 0 {

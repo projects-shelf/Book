@@ -3,8 +3,8 @@ package stream
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -46,7 +46,7 @@ func CBRPagesHandler() gin.HandlerFunc {
 		cmdList := exec.Command("7z", "l", "-ba", filePath)
 		outList, err := cmdList.Output()
 		if err != nil {
-			fmt.Errorf("7z list command failed: %w", err)
+			log.Printf("7z list command failed: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -70,13 +70,13 @@ func CBRPagesHandler() gin.HandlerFunc {
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			fmt.Errorf("scanner error: %w", err)
+			log.Printf("scanner error: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
 
 		if len(files) == 0 {
-			fmt.Errorf("no image files found in CBR archive")
+			log.Printf("no image files found in CBR archive")
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -123,7 +123,7 @@ func CBRStreamHandler() gin.HandlerFunc {
 		cmdList := exec.Command("7z", "l", "-ba", filePath)
 		outList, err := cmdList.Output()
 		if err != nil {
-			fmt.Errorf("7z list command failed: %w", err)
+			log.Printf("7z list command failed: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -147,13 +147,13 @@ func CBRStreamHandler() gin.HandlerFunc {
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			fmt.Errorf("scanner error: %w", err)
+			log.Printf("scanner error: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
 
 		if len(files) == 0 {
-			fmt.Errorf("no image files found in CBR archive")
+			log.Printf("no image files found in CBR archive")
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -168,24 +168,12 @@ func CBRStreamHandler() gin.HandlerFunc {
 		cmdExtract := exec.Command("7z", "x", "-so", filePath, targetFile)
 		stdout, err := cmdExtract.StdoutPipe()
 		if err != nil {
-			fmt.Errorf("failed to get stdout pipe: %w", err)
+			log.Printf("failed to get stdout pipe: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
 		if err := cmdExtract.Start(); err != nil {
-			fmt.Errorf("failed to start 7z extract: %w", err)
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-
-		imgData, err := io.ReadAll(stdout)
-		if err != nil {
-			fmt.Errorf("failed to read extracted image data: %w", err)
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		if err := cmdExtract.Wait(); err != nil {
-			fmt.Errorf("7z extract command failed: %w", err)
+			log.Printf("failed to start 7z extract: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -194,7 +182,19 @@ func CBRStreamHandler() gin.HandlerFunc {
 
 		c.Header("Content-Type", mime)
 		c.Header("Cache-Control", "public, max-age=3600")
-		c.Data(http.StatusOK, mime, imgData)
+
+		c.Status(http.StatusOK)
+		_, copyErr := io.Copy(c.Writer, stdout)
+
+		if copyErr != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		if err := cmdExtract.Wait(); err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
 	}
 }
 

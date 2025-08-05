@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -126,6 +128,7 @@ func PDFStreamHandler() gin.HandlerFunc {
 
 		cmdList := exec.Command("gs",
 			"-sDEVICE=png16m",
+			"-dUseCIEColor=false",
 			fmt.Sprintf("-dFirstPage=%d", page),
 			fmt.Sprintf("-dLastPage=%d", page),
 			fmt.Sprintf("-r%d", dpi),
@@ -136,22 +139,19 @@ func PDFStreamHandler() gin.HandlerFunc {
 		)
 
 		if err := cmdList.Run(); err != nil {
-			fmt.Errorf("ghostscript command failed: %w", err)
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-
-		outList, err := os.ReadFile(tmpFile)
-		if err != nil {
-			fmt.Errorf("failed to read temp PNG file: %w", err)
+			log.Printf("ghostscript command failed: %v", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
 
 		c.Header("Content-Type", "image/png")
 		c.Header("Cache-Control", "public, max-age=3600")
-		c.Data(http.StatusOK, "image/png", outList)
 
-		os.Remove(tmpFile)
+		c.File(tmpFile)
+
+		go func(file string) {
+			time.Sleep(2 * time.Second)
+			os.Remove(file)
+		}(tmpFile)
 	}
 }
