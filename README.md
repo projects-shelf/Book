@@ -44,9 +44,9 @@ During the initial scan of the books, the server may appear unresponsive. Please
 ![viewer](./assets/shelf_book_viewer.png)
 
 options
-  - Left to Right / Right to Left reading direction
+  - LtoR / RtoL reading direction
   - No spreads / Odd spreads / Even spreads
-  - Adjustable font size
+  - Font size
 
 ### Searchable by title and metadata
 

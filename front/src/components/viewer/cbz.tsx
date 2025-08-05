@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider"
 import { sendProgress } from '@/api/progress';
 import { sendAccess } from '@/api/access';
 import { useWindowSize } from '@/hooks/windowSize';
+import { isSafari } from '@/lib/safari';
 
 interface CBZViewerProps {
     fileUrl: string;
@@ -149,6 +150,27 @@ export function CBZViewer({ fileUrl, initialPage = 1 }: CBZViewerProps) {
 
         fetchPageCount();
     }, []);
+
+    const [mLoaded, setMLoaded] = useState(false);
+    const [nLoaded, setNLoaded] = useState(false);
+
+    if (isSafari() && !(mLoaded && nLoaded)) {
+        return (
+            <div>
+                <p>Loading...</p>
+                <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+                    <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                        src={`/book/pdf?path=${encodedFilePath}&page=${standerisedPageNumber}`}
+                        onLoad={() => setMLoaded(true)}
+                        onError={() => setMLoaded(true)} />
+                    <img style={{ width: "auto", height: "auto", maxWidth: "none", maxHeight: "none" }}
+                        src={`/book/pdf?path=${encodedFilePath}&page=${standerisedPageNumber + 1}`}
+                        onLoad={() => setNLoaded(true)}
+                        onError={() => setNLoaded(true)} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <ViewerLayout
