@@ -47,9 +47,9 @@ export function ViewerLayout({
             const diff = touchStartX.current - touchEndX.current;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    onLeft?.();
-                } else {
                     onRight?.();
+                } else {
+                    onLeft?.();
                 }
             }
         }
