@@ -57,12 +57,16 @@ Allows prefix search on titles and exact match search on metadata using hashtags
 Built with Go and SQLite, it consumes minimal system resources.
 
 ```
-CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O   PIDS
-7b71d4d19569   shelf_book_go      0.00%     11.12MiB / 5.128GiB   0.21%     2MB / 242MB     0B / 0B     16
-ec92381e644d   shelf_book_nginx   0.00%     2.031MiB / 5.128GiB   0.04%     244MB / 249MB   0B / 0B     2
+CONTAINER ID   NAME                 CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O   PIDS
+13ac41d1866e   shelf_book_nginx     0.00%     1.91MiB / 3.88GiB    0.05%     209MB / 210MB     11.5MB / 541kB    2
+bcebb5552894   shelf_book_go        0.00%     14.57MiB / 3.88GiB   0.37%     706kB / 208MB     111MB / 38.7MB    11
 ```
 
-Resource consumption during idle periods (on Arm Mac)
+Resource consumption during idle periods (on Intel Mac)
+
+## Note
+
+- PDF rendering requires a moderate amount of resources.
 
 ## License
 
