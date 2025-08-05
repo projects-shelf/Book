@@ -18,7 +18,7 @@ import (
 var dpi int
 
 func init() {
-	dpi = getEnvInt("PDF_RENDERING_DPI", 600)
+	dpi = getEnvInt("PDF_RENDERING_DPI", 300)
 }
 
 func getEnvInt(key string, def int) int {
@@ -149,6 +149,7 @@ func PDFStreamHandler() gin.HandlerFunc {
 		}
 
 		c.Header("Content-Type", "image/png")
+		c.Header("Cache-Control", "public, max-age=3600")
 		c.Data(http.StatusOK, "image/png", outList)
 
 		os.Remove(tmpFile)
