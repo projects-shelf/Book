@@ -182,16 +182,16 @@
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion.git#main"
   },
-  "@farmfe/cli@1.0.4": {
+  "@farmfe/cli@1.0.5": {
     "licenses": "MIT",
     "repository": "https://github.com/farm-fe/farm",
     "publisher": "bright wu",
     "email": "1521488775@qq.com"
   },
-  "@farmfe/core-darwin-arm64@1.7.4": {
+  "@farmfe/core-darwin-arm64@1.7.11": {
     "licenses": "MIT"
   },
-  "@farmfe/core@1.7.4": {
+  "@farmfe/core@1.7.11": {
     "licenses": "MIT",
     "repository": "https://github.com/farm-fe/farm",
     "publisher": "bright wu",
@@ -355,10 +355,6 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-arrow@1.1.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
   "@radix-ui/react-arrow@1.1.7": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
@@ -375,7 +371,7 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-dialog@1.1.11": {
+  "@radix-ui/react-dialog@1.1.14": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -387,15 +383,7 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-dismissable-layer@1.1.7": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
   "@radix-ui/react-focus-guards@1.1.2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
-  "@radix-ui/react-focus-scope@1.1.4": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -411,15 +399,7 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-popper@1.2.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
   "@radix-ui/react-popper@1.2.7": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
-  "@radix-ui/react-portal@1.1.6": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -428,10 +408,6 @@
     "repository": "https://github.com/radix-ui/primitives"
   },
   "@radix-ui/react-presence@1.1.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
-  "@radix-ui/react-primitive@2.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -451,15 +427,11 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-separator@1.1.4": {
+  "@radix-ui/react-separator@1.1.7": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
   "@radix-ui/react-slider@1.3.5": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
-  "@radix-ui/react-slot@1.2.0": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -471,7 +443,7 @@
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
-  "@radix-ui/react-tooltip@1.2.4": {
+  "@radix-ui/react-tooltip@1.2.7": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },
@@ -504,10 +476,6 @@
     "repository": "https://github.com/radix-ui/primitives"
   },
   "@radix-ui/react-use-size@1.1.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/radix-ui/primitives"
-  },
-  "@radix-ui/react-visually-hidden@1.2.0": {
     "licenses": "MIT",
     "repository": "https://github.com/radix-ui/primitives"
   },

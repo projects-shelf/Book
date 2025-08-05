@@ -193,7 +193,7 @@ func CBRStreamHandler() gin.HandlerFunc {
 		mime := detectImageTypeByExt(targetFile)
 
 		c.Header("Content-Type", mime)
-
+		c.Header("Cache-Control", "public, max-age=3600")
 		c.Data(http.StatusOK, mime, imgData)
 	}
 }

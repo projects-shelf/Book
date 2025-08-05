@@ -82,7 +82,7 @@ func extractCBZCover(cbzPath, outputWebPPath string) error {
 	}
 
 	// 4. Decode image data
-	img, _, err := image.Decode(bytes.NewReader(imgData))
+	img, err := decodeImageWithWebP(imgData)
 	if err != nil {
 		return fmt.Errorf("failed to decode image data: %w", err)
 	}

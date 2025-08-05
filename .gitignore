@@ -1,0 +1,5 @@
+.DS_Store
+books/
+db/
+cache/
+node_modules/

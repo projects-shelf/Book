@@ -2,7 +2,12 @@
 	"compilerOptions": {
 		"target": "ES2020",
 		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"lib": [
+			"ES2020",
+			"DOM",
+			"DOM.Iterable",
+			"WebWorker"
+		],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		/* Bundler mode */
@@ -15,7 +20,9 @@
 		/* ShadUI */
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": [
+				"./src/*"
+			]
 		},
 		/* Linting */
 		"strict": true,
@@ -23,7 +30,9 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src"],
+	"include": [
+		"src"
+	],
 	"references": [
 		{
 			"path": "./tsconfig.node.json"

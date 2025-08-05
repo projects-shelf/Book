@@ -79,7 +79,7 @@ func extractCBRCover(cbrPath, outputWebPPath string) error {
 	}
 
 	// 5. Decode image
-	img, _, err := image.Decode(bytes.NewReader(imgData))
+	img, err := decodeImageWithWebP(imgData)
 	if err != nil {
 		return fmt.Errorf("failed to decode image data: %w", err)
 	}

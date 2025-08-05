@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-	"image/jpeg"
+	"image/png"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/chai2010/webp"
 	"golang.org/x/image/draw"
@@ -20,36 +19,34 @@ func extractPDFCover(pdfPath, outputWebPPath string) error {
 		return fmt.Errorf("failed to create output dir: %w", err)
 	}
 
-	tmpJPEG := outputWebPPath + ".tmp.jpg"
+	tmpPNG := outputWebPPath + ".tmp.png"
 
-	// Step 1: extract first page as JPEG
-	// pdftoppm expects a prefix, not a filename
-	prefix := strings.TrimSuffix(tmpJPEG, ".jpg")
-	cmd := exec.Command("pdftoppm", "-jpeg", "-f", "1", "-l", "1", "-r", "150", pdfPath, prefix)
+	// Step 1: Convert the first page of the PDF to PNG using Ghostscript
+	cmd := exec.Command("gs",
+		"-sDEVICE=png16m",
+		"-dFirstPage=1",
+		"-dLastPage=1",
+		"-r150",
+		"-o", tmpPNG,
+		pdfPath,
+	)
 	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("pdftoppm failed: %v\noutput: %s", err, out)
+		return fmt.Errorf("ghostscript failed: %v\noutput: %s", err, out)
 	}
 
-	// Output file will be prefix + "-[0]*1.jpg"
-	matches, err := filepath.Glob(prefix + "-*.jpg")
-	if err != nil || len(matches) == 0 {
-		return fmt.Errorf("no jpg files found matching pattern: %v", prefix+"-*.jpg")
-	}
-	jpgPath := matches[0]
-
-	// Step 2: open and decode the image
-	f, err := os.Open(jpgPath)
+	// Step 2: open and decode the PNG image
+	f, err := os.Open(tmpPNG)
 	if err != nil {
-		return fmt.Errorf("failed to open JPEG: %w", err)
+		return fmt.Errorf("failed to open PNG: %w", err)
 	}
 	defer f.Close()
 
-	img, err := jpeg.Decode(f)
+	img, err := png.Decode(f)
 	if err != nil {
-		return fmt.Errorf("failed to decode JPEG: %w", err)
+		return fmt.Errorf("failed to decode PNG: %w", err)
 	}
 
-	// Step 3: resize if needed (short side ≥ Size)
+	// Step 3: resize if needed (short side ≥ size)
 	bounds := img.Bounds()
 	width := bounds.Dx()
 	height := bounds.Dy()
@@ -76,7 +73,7 @@ func extractPDFCover(pdfPath, outputWebPPath string) error {
 	defer outFile.Close()
 
 	var buf bytes.Buffer
-	if err := webp.Encode(&buf, resized, &webp.Options{Lossless: false, Quality: quality}); err != nil {
+	if err := webp.Encode(&buf, resized, &webp.Options{Lossless: false, Quality: float32(quality)}); err != nil {
 		return fmt.Errorf("failed to encode WebP: %w", err)
 	}
 	if _, err := buf.WriteTo(outFile); err != nil {
@@ -84,7 +81,7 @@ func extractPDFCover(pdfPath, outputWebPPath string) error {
 	}
 
 	// Step 5: cleanup
-	_ = os.Remove(jpgPath)
+	_ = os.Remove(tmpPNG)
 
 	return nil
 }
