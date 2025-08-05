@@ -127,7 +127,9 @@ export function CBRViewer({ fileUrl, initialPage = 1 }: CBRViewerProps) {
         }
     }, [fileUrl]);
 
-    sendAccess(encodedFilePath ?? "")
+    useMemo(() => {
+        sendAccess(encodedFilePath ?? "");
+    }, [fileUrl]);
 
     useEffect(() => {
         const fetchPageCount = async () => {

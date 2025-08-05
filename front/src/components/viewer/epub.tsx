@@ -73,7 +73,9 @@ export function EPUBViewer({ fileUrl }: EPUBViewerProps) {
         }
     }, [fileUrl]);
 
-    sendAccess(encodedFilePath ?? "")
+    useMemo(() => {
+        sendAccess(encodedFilePath ?? "");
+    }, [fileUrl]);
 
     useEffect(() => {
         const stopArrowKeys = (e: KeyboardEvent) => {

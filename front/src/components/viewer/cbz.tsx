@@ -127,7 +127,9 @@ export function CBZViewer({ fileUrl, initialPage = 1 }: CBZViewerProps) {
         }
     }, [fileUrl]);
 
-    sendAccess(encodedFilePath ?? "")
+    useMemo(() => {
+        sendAccess(encodedFilePath ?? "");
+    }, [fileUrl]);
 
     useEffect(() => {
         const fetchPageCount = async () => {

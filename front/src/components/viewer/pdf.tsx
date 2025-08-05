@@ -127,7 +127,9 @@ export function PDFViewer({ fileUrl, initialPage = 1 }: PDFViewerProps) {
         }
     }, [fileUrl]);
 
-    sendAccess(encodedFilePath ?? "")
+    useMemo(() => {
+        sendAccess(encodedFilePath ?? "");
+    }, [fileUrl]);
 
     useEffect(() => {
         const fetchPageCount = async () => {
