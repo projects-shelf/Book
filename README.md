@@ -20,10 +20,8 @@
 <details>
 <summary><strong>Known Bugs</strong></summary>
 
-- Some elements fail to render in certain Japanese PDFs.  
 - Safari: The epubViewer's display area may be reduced.  
 - Safari: The epubViewer may become unresponsive.  
-- Safari: The first page image may not display correctly for CBZ/CBR files.
 
 </details>
 
